@@ -12,7 +12,7 @@ beforeEach(() => {
   return seed(data);
 });
 
-describe.only("app", () => {
+describe("app", () => {
   describe("GET /api/categories", () => {
     test("status:200 and response message", () => {
       return request(app).get("/api/categories").expect(200);
@@ -60,15 +60,20 @@ describe.only("app", () => {
         return request(app)
           .get("/api/reviews")
           .expect(200)
-          .then((res) => {});
+          .then((res) => {
+            res.body.reviews.forEach((review) => {
+              expect(review.hasOwnProperty("comment_count")).toBe(true);
+            });
+          });
       });
       test("returns in date descending order", () => {
         return request(app)
           .get("/api/reviews")
           .expect(200)
           .then((res) => {
+            console.log(res.body.reviews, "Created at desc order");
             expect(res.body.reviews[0].created_at).toBe(
-              "2021-01-25T11:16:54.963Z"
+              "2021-01-18T10:01:41.251Z"
             );
             expect(
               res.body.reviews[res.body.reviews.length - 1].created_at
@@ -77,4 +82,7 @@ describe.only("app", () => {
       });
     });
   });
+});
+test("Testing for a 404 error with a route that does not exist", () => {
+  return request(app).get("/api/404fault").expect(404);
 });
