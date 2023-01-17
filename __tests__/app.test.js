@@ -66,17 +66,14 @@ describe("app", () => {
             });
           });
       });
-      test("returns in date descending order, this shows the oldest and newest film", () => {
+      test("returns in date descending order", () => {
         return request(app)
           .get("/api/reviews")
           .expect(200)
           .then((res) => {
-            expect(res.body.reviews[0].created_at).toBe(
-              "2021-01-25T11:16:54.963Z"
-            );
-            expect(
-              res.body.reviews[res.body.reviews.length - 1].created_at
-            ).toBe("1970-01-10T02:08:38.400Z");
+            expect(res.body.reviews).toBeSorted("created_at", {
+              descending: true,
+            });
           });
       });
       describe("GET /api/reviews", () => {
@@ -85,9 +82,7 @@ describe("app", () => {
             .get("/api/reviews/1")
             .expect(200)
             .then((res) => {
-              const review = res._body.review;
-              console.log(review, "review");
-
+              const review = res.body.review;
               expect(typeof review).toBe("object");
               expect(review.hasOwnProperty("owner")).toBe(true);
               expect(review.hasOwnProperty("title")).toBe(true);
