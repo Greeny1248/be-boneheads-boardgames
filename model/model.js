@@ -6,7 +6,6 @@ readCategories = () => {
   return db
     .query(queryString)
     .then((results) => {
-      console.log(results.rows);
       return results.rows;
     })
     .catch((err) => {
@@ -15,14 +14,13 @@ readCategories = () => {
 };
 
 readReviews = () => {
-  let queryString = `SELECT  reviews.review_id, comments.review_id, owner, title, category, review_img_url, comments.created_at, comments.votes, designer, reviews.review_id, COUNT (comment_id) AS "comment_count"
+  let queryString = `SELECT  reviews.review_id, reviews.owner, reviews.title, reviews.category, review_img_url, reviews.created_at, reviews.votes, reviews.designer,  (SELECT COUNT(*) FROM comments WHERE comments.review_id = reviews.review_id) as comment_count
   FROM reviews
-  JOIN comments
-  ON reviews.review_id = comments.review_id
+  LEFT JOIN comments ON reviews.review_id = comments.review_id
   GROUP BY reviews.review_id
- ORDER BY created_at DESC;`;
+  ORDER BY created_at DESC
+  ;`;
   return db.query(queryString).then((results) => {
-    console.log(results.rows, "RESULTS");
     return results.rows;
   });
 };
