@@ -79,6 +79,28 @@ describe("app", () => {
             ).toBe("1970-01-10T02:08:38.400Z");
           });
       });
+      describe("GET /api/reviews", () => {
+        test("returns an object with the correct review_id from the query query with an owner, title, review_id, category, review_img_url, created_at, votes, designer", () => {
+          return request(app)
+            .get("/api/reviews/1")
+            .expect(200)
+            .then((res) => {
+              const review = res._body.review;
+              console.log(review, "review");
+
+              expect(typeof review).toBe("object");
+              expect(review.hasOwnProperty("owner")).toBe(true);
+              expect(review.hasOwnProperty("title")).toBe(true);
+              expect(review.hasOwnProperty("review_id")).toBe(true);
+              expect(review.hasOwnProperty("category")).toBe(true);
+              expect(review.hasOwnProperty("review_img_url")).toBe(true);
+              expect(review.hasOwnProperty("created_at")).toBe(true);
+              expect(review.hasOwnProperty("votes")).toBe(true);
+              expect(review.hasOwnProperty("designer")).toBe(true);
+              expect(review.hasOwnProperty("review_body")).toBe(true);
+            });
+        });
+      });
     });
   });
 });

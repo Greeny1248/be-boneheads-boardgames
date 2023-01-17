@@ -24,4 +24,16 @@ readReviews = () => {
     return results.rows;
   });
 };
-module.exports = { readCategories, readReviews };
+
+fetchReviewById = (review_id)=>{
+  const queryString = `SELECT * FROM reviews WHERE reviews.review_id=$1`;
+  return db.query(queryString, [review_id]).then(({rows, rowCount})=>{
+    if (rowCount === 0){
+      return Promise.reject({status:404, msg: 'review_id invalid'})
+    } else {
+      return rows[0]
+    }
+  })
+}
+
+module.exports = { readCategories, readReviews, fetchReviewById };

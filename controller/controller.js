@@ -1,5 +1,9 @@
 const { devData } = require("../db/data/development-data/index");
-const { readCategories, readReviews } = require("../model/model.js");
+const {
+  readCategories,
+  readReviews,
+  fetchReviewById,
+} = require("../model/model.js");
 
 const viewAllCategories = (req, res) => {
   readCategories()
@@ -21,4 +25,15 @@ const viewAllReviews = (req, res) => {
     });
 };
 
-module.exports = { viewAllCategories, viewAllReviews };
+const viewReviewById = (req, res, next) => {
+  const { review_id } = req.params;
+  console.log(req.params, "Req");
+  fetchReviewById(review_id)
+    .then((review) => {
+     // console.log(review, "Review");
+      res.status(200).send({ review });
+    })
+    .catch(next);
+};
+
+module.exports = { viewAllCategories, viewAllReviews, viewReviewById };
