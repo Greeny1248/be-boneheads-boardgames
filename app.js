@@ -11,10 +11,10 @@ app.get("/api/reviews", viewAllReviews);
 
 app.use((err, request, response, next) => {
   console.log(err);
-  response.status(500).send("Internal server error");
+  response.status(500).send({ msg: "Internal server error" });
 });
-app.use((error, request, response, next) => {
-  response.status(404).send("Route Does Not Exist");
+app.use((request, response, next) => {
+  response.status(404).send({ msg: "Route Does Not Exist" });
   next(err);
 });
 
