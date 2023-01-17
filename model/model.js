@@ -48,6 +48,7 @@ ORDER BY created_at DESC`;
     return rows;
   });
 };
+// just adding comment to allow me to pull request
 
 module.exports = {
   readCategories,
