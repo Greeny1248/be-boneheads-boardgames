@@ -30,7 +30,6 @@ const viewReviewById = (req, res, next) => {
   console.log(req.params, "Req");
   fetchReviewById(review_id)
     .then((review) => {
-     // console.log(review, "Review");
       res.status(200).send({ review });
     })
     .catch(next);
