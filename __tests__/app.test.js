@@ -83,16 +83,13 @@ describe("app", () => {
   });
 });
 
-describe("Error Testing", ()=>{
-
+describe("Error Testing", () => {
   test("Testing for a 404 error with a route that does not exist", () => {
     return request(app)
-    .get("/api/404fault")
-    .expect(404)
-    .then(({ body }) => {
-      console.log(body);
-      expect(body.msg).toBe("Route Does Not Exist");
-    });
-  })
+      .get("/api/404fault")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Route Does Not Exist");
+      });
   });
-
+});
