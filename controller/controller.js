@@ -1,9 +1,11 @@
+const { response } = require("../app");
 const { devData } = require("../db/data/development-data/index");
 const {
   readCategories,
   readReviews,
   fetchReviewById,
   fetchCommentsFromReview,
+  createReviewComment,
 } = require("../model/model.js");
 
 const viewAllCategories = (req, res) => {
@@ -29,6 +31,7 @@ const viewAllReviews = (req, res, next) => {
 
 const viewReviewById = (req, res, next) => {
   const { review_id } = req.params;
+
   fetchReviewById(review_id)
     .then((review) => {
       res.status(200).send({ review });
@@ -46,10 +49,20 @@ const viewCommentsFromReview = (req, res, next) => {
     })
     .catch(next);
 };
+const postReviewComment = (req, res, next) => {
+  const { review_id } = req.params;
+  const { username, body } = req.body;
+  createReviewComment(review_id, username, body)
+    .then((newComment) => {
+      res.status(201).send({ newComment });
+    })
+    .catch(next);
+};
 
 module.exports = {
   viewAllCategories,
   viewAllReviews,
   viewReviewById,
   viewCommentsFromReview,
+  postReviewComment,
 };
