@@ -2,6 +2,7 @@ const { response } = require("../app");
 const { devData } = require("../db/data/development-data/index");
 const {
   readCategories,
+  readUsers,
   readReviews,
   fetchReviewById,
   fetchCommentsFromReview,
@@ -14,7 +15,21 @@ const viewAllCategories = (req, res) => {
     .then((categories) => {
       res.status(200).send({ categories });
     })
-    .catch((err) => {});
+    .catch((err) => {
+      next(err);
+    });
+};
+
+const viewAllUsers = (req, res, next) => {
+  readUsers()
+    .then((users) => {
+      res.status(200).send({ users });
+    })
+    .catch((err) => {
+      {
+        next(err);
+      }
+    });
 };
 
 const viewAllReviews = (req, res, next) => {
@@ -74,4 +89,5 @@ module.exports = {
   viewCommentsFromReview,
   postReviewComment,
   patchReviewVote,
+  viewAllUsers,
 };
