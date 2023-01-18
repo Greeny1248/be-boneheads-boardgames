@@ -8,6 +8,7 @@ const {
   viewReviewById,
   viewCommentsFromReview,
   postReviewComment,
+  patchReviewVote,
 } = require("./controller/controller");
 
 app.get("/api/categories", viewAllCategories);
@@ -15,6 +16,7 @@ app.get("/api/reviews", viewAllReviews);
 app.get("/api/reviews/:review_id", viewReviewById);
 app.get("/api/reviews/:review_id/comments", viewCommentsFromReview);
 app.post("/api/reviews/:review_id/comments", postReviewComment);
+app.patch("/api/reviews/:review_id", patchReviewVote);
 app.all("/*", (req, res, next) => {
   res.status(404).send({ msg: "Path not found" });
 });
@@ -48,7 +50,6 @@ app.use((err, req, res, next) => {
   }
 });
 app.use((err, req, res, next) => {
-  console.log(err);
   res.status(500).send({ msg: "Internal server error" });
 });
 

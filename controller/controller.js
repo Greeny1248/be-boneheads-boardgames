@@ -6,6 +6,7 @@ const {
   fetchReviewById,
   fetchCommentsFromReview,
   createReviewComment,
+  updateReviewVote,
 } = require("../model/model.js");
 
 const viewAllCategories = (req, res) => {
@@ -13,9 +14,7 @@ const viewAllCategories = (req, res) => {
     .then((categories) => {
       res.status(200).send({ categories });
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch((err) => {});
 };
 
 const viewAllReviews = (req, res, next) => {
@@ -24,7 +23,6 @@ const viewAllReviews = (req, res, next) => {
       res.status(200).send({ reviews });
     })
     .catch((err) => {
-      console.log(err);
       next(err);
     });
 };
@@ -37,7 +35,6 @@ const viewReviewById = (req, res, next) => {
       res.status(200).send({ review });
     })
     .catch((err) => {
-      console.log(err);
       next(err);
     });
 };
@@ -59,10 +56,22 @@ const postReviewComment = (req, res, next) => {
     .catch(next);
 };
 
+const patchReviewVote = (req, res, next) => {
+  const { review_id } = req.params;
+  const { inc_votes } = req.body;
+
+  updateReviewVote(review_id, inc_votes)
+    .then((review) => {
+      res.status(200).send({ review });
+    })
+    .catch(next);
+};
+
 module.exports = {
   viewAllCategories,
   viewAllReviews,
   viewReviewById,
   viewCommentsFromReview,
   postReviewComment,
+  patchReviewVote,
 };
