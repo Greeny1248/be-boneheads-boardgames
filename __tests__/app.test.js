@@ -328,3 +328,58 @@ test("Status 400 Bad request, needs valid new comment with correct data type", (
       expect(msg).toBe("Bad request");
     });
 });
+describe("POST /api/reviews/:review_id/comments", () => {
+  test("status:201 and returns newComment", () => {
+    const newComment = {
+      username: "dav3rid",
+      body: "Cool game bro",
+    };
+    return request(app)
+      .post("/api/reviews/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body: { newComment } }) => {
+        expect(newComment.hasOwnProperty("review_id")).toBe(true);
+        expect(newComment.hasOwnProperty("votes")).toBe(true);
+        expect(newComment.hasOwnProperty("author")).toBe(true);
+        expect(newComment.hasOwnProperty("body")).toBe(true);
+        expect(newComment.hasOwnProperty("created_at")).toBe(true);
+      });
+  });
+});
+test("Status 400 Bad request, needs username and body", () => {
+  const newComment = { body: "Bad game bro" };
+  return request(app)
+    .post("/api/reviews/1/comments")
+    .send(newComment)
+    .expect(400)
+    .then(({ body: { msg } }) => {
+      expect(msg).toBe("Bad request");
+    });
+});
+test("Status 400 Bad request, needs valid username from users.js file.", () => {
+  const newComment = {
+    username: "NotAUser", body: "",
+  };
+  return request(app)
+    .post("/api/reviews/1/comments")
+    .send(newComment)
+    .expect(400)
+    .then(({ body: { msg } }) => {
+      expect(msg).toBe("Bad request");
+    });
+});
+
+test("Status 404 path not found, if review_id entered is valid but does not exist", () => {
+  const newComment = {
+    username: "mallionaire",
+    body: "best game EVERR",
+  };
+  return request(app)
+    .post("/api/reviews/9999/comments")
+    .send(newComment)
+    .expect(404)
+    .then(({ body: { msg } }) => {
+      expect(msg).toBe("Path not found");
+    });
+});
