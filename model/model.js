@@ -94,6 +94,7 @@ createReviewComment = (review_id, username, body) => {
   });
 };
 
+
 updateReviewVote = (review_id, inc_votes) => {
   const queryString = `UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING *`;
   return db.query(queryString, [inc_votes, review_id]).then(({ rows }) => {
@@ -104,6 +105,8 @@ updateReviewVote = (review_id, inc_votes) => {
   });
 };
 
+
+
 module.exports = {
   readCategories,
   readUsers,
@@ -111,5 +114,7 @@ module.exports = {
   fetchReviewById,
   fetchCommentsFromReview,
   createReviewComment,
+
   updateReviewVote,
+
 };

@@ -414,8 +414,10 @@ test("Status 400 Bad request, needs username and body", () => {
 });
 test("Status 400 Bad request, needs valid username from users.js file.", () => {
   const newComment = {
+
     username: "NotAUser",
     body: "",
+
   };
   return request(app)
     .post("/api/reviews/1/comments")
