@@ -25,15 +25,37 @@ readUsers = () => {
     });
 };
 
-readReviews = () => {
-  let queryString = `SELECT reviews.review_id, reviews.owner, reviews.title, reviews.category, review_img_url, reviews.created_at, reviews.votes, reviews.designer, (SELECT COUNT(*) FROM comments WHERE comments.review_id = reviews.review_id) AS comment_count
+readReviews = (sort_by = "created_at", order = "desc", category) => {
+  let queryString = `SELECT reviews.*, CAST(COUNT(comments.review_id) AS int) AS comment_count
   FROM reviews
-  JOIN comments ON reviews.review_id = comments.review_id
-  GROUP BY reviews.review_id
-  ORDER BY created_at DESC
-  ;`;
-  return db.query(queryString).then((results) => {
-    return results.rows;
+  JOIN comments ON reviews.review_id = comments.review_id `;
+  const queryArray = [];
+  const columnArray = [
+    "owner",
+    "title",
+    "designer",
+    "review_img_url",
+    "review_body",
+    "category",
+    "created_at",
+    "votes",
+  ];
+  const orderArray = ["asc", "desc"];
+  if (category) {
+    queryString += `WHERE category = $1`;
+    queryArray.push(category);
+  }
+  if (!columnArray.includes(sort_by) || !orderArray.includes(order)) {
+    return Promise.reject({ status: 400, msg: "Bad request" });
+  }
+
+  queryString += ` GROUP BY reviews.review_id
+  ORDER BY ${sort_by} ${order};`;
+  return db.query(queryString, queryArray).then((res) => {
+    if (res.rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "Category not found" });
+    }
+    return res.rows;
   });
 };
 
@@ -49,7 +71,7 @@ fetchReviewById = (review_id) => {
 };
 
 fetchCommentsFromReview = (review_id) => {
-  const queryString = `SELECT comments.* FROM comments LEFT JOIN users ON comments.author = users.username
+  const queryString = `SELECT comments.* FROM comments 
 WHERE comments.review_id = $1
 ORDER BY created_at DESC`;
   return db.query(queryString, [review_id]).then(({ rows }) => {
@@ -60,9 +82,7 @@ ORDER BY created_at DESC`;
   });
 };
 createReviewComment = (review_id, username, body) => {
-
   if (!username || !body) {
-
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
   const queryString = `INSERT INTO comments (author, body, review_id) VALUES ($1, $2, $3) RETURNING *`;
@@ -74,7 +94,6 @@ createReviewComment = (review_id, username, body) => {
   });
 };
 
-
 updateReviewVote = (review_id, inc_votes) => {
   const queryString = `UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING *`;
   return db.query(queryString, [inc_votes, review_id]).then(({ rows }) => {
@@ -85,7 +104,6 @@ updateReviewVote = (review_id, inc_votes) => {
   });
 };
 
-
 module.exports = {
   readCategories,
   readUsers,
@@ -93,6 +111,5 @@ module.exports = {
   fetchReviewById,
   fetchCommentsFromReview,
   createReviewComment,
-
   updateReviewVote,
 };

@@ -9,7 +9,6 @@ const {
   createReviewComment,
 
   updateReviewVote,
-
 } = require("../model/model.js");
 
 const viewAllCategories = (req, res) => {
@@ -35,7 +34,10 @@ const viewAllUsers = (req, res, next) => {
 };
 
 const viewAllReviews = (req, res, next) => {
-  readReviews()
+  const { sort_by } = req.query;
+  const { order } = req.query;
+  const { category } = req.query;
+  readReviews(sort_by, order, category)
     .then((reviews) => {
       res.status(200).send({ reviews });
     })
@@ -73,7 +75,6 @@ const postReviewComment = (req, res, next) => {
     .catch(next);
 };
 
-
 const patchReviewVote = (req, res, next) => {
   const { review_id } = req.params;
   const { inc_votes } = req.body;
@@ -85,7 +86,6 @@ const patchReviewVote = (req, res, next) => {
     .catch(next);
 };
 
-
 module.exports = {
   viewAllCategories,
   viewAllReviews,
@@ -94,5 +94,4 @@ module.exports = {
   postReviewComment,
   patchReviewVote,
   viewAllUsers,
-
 };
