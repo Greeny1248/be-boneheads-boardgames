@@ -97,7 +97,7 @@ test("GET /api/reviews: returns an object with the correct review_id from the en
     .get("/api/reviews/1")
     .expect(200)
     .then((res) => {
-      const review = res.body.review;
+      const review = res.body.review[0];
       expect(typeof review).toBe("object");
       expect(review.hasOwnProperty("owner")).toBe(true);
       expect(review.hasOwnProperty("title")).toBe(true);
@@ -108,6 +108,15 @@ test("GET /api/reviews: returns an object with the correct review_id from the en
       expect(review.hasOwnProperty("votes")).toBe(true);
       expect(review.hasOwnProperty("designer")).toBe(true);
       expect(review.hasOwnProperty("review_body")).toBe(true);
+    });
+});
+test("Testing comment_count field which has been added to get review by review_id", () => {
+  return request(app)
+    .get("/api/reviews/2")
+    .expect(200)
+    .then((res) => {
+      const review = res.body.review[0];
+      expect(review.comment_count).toEqual(3);
     });
 });
 
@@ -224,7 +233,7 @@ test("testing for a 404 when a category column is invalid", () => {
     });
 });
 
-test("POST /api/reviews/:review_id/commentsstatus:201 and returns newComment", () => {
+test("POST /api/reviews/:review_id/comments status:201 and returns newComment", () => {
   const newComment = {
     username: "dav3rid",
     body: "Cool game bro",

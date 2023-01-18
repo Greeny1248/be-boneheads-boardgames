@@ -1,3 +1,4 @@
+const { resourceLimits } = require("worker_threads");
 const db = require("../db/connection");
 
 readCategories = () => {
@@ -60,12 +61,19 @@ readReviews = (sort_by = "created_at", order = "desc", category) => {
 };
 
 fetchReviewById = (review_id) => {
-  const queryString = `SELECT * FROM reviews WHERE reviews.review_id=$1`;
+  const queryString = `SELECT reviews.*, 
+  CAST (COUNT (comments.body) AS INT)comment_count  
+  FROM reviews 
+  LEFT JOIN comments
+  ON reviews.review_id = comments.review_id
+  WHERE reviews.review_id = $1
+  GROUP BY reviews.review_id`;
   return db.query(queryString, [review_id]).then(({ rows, rowCount }) => {
     if (rowCount === 0) {
       return Promise.reject({ status: 404, msg: "Path not found" });
     } else {
-      return rows[0];
+      const reviews = { ...resourceLimits.rows };
+      return rows;
     }
   });
 };
