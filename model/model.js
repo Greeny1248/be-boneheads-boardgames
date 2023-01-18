@@ -49,7 +49,7 @@ ORDER BY created_at DESC`;
   });
 };
 createReviewComment = (review_id, username, body) => {
-  if (!username || !body || body.length === 0 || username.length === 0) {
+  if (!username || !body) {
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
   const queryString = `INSERT INTO comments (author, body, review_id) VALUES ($1, $2, $3) RETURNING *`;
@@ -61,10 +61,26 @@ createReviewComment = (review_id, username, body) => {
   });
 };
 
+
+updateReviewVote = (review_id, inc_votes) => {
+  const queryString = `UPDATE reviews SET votes = votes + $1 WHERE review_id = $2 RETURNING *`;
+  return db.query(queryString, [inc_votes, review_id]).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "Path not found" });
+    }
+    return rows[0];
+  });
+};
+
+
+
 module.exports = {
   readCategories,
   readReviews,
   fetchReviewById,
   fetchCommentsFromReview,
   createReviewComment,
+
+  updateReviewVote,
+
 };
