@@ -140,6 +140,19 @@ removeCommentById = (comment_id) => {
   });
 };
 
+removeCommentById = (comment_id) => {
+  const queryString = `DELETE FROM comments
+  WHERE comment_id = $1
+  RETURNING *;`;
+  return db.query(queryString, [comment_id]).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "Path not found" });
+    }
+    return rows;
+  });
+};
+
+
 module.exports = {
   readJson,
   readCategories,
