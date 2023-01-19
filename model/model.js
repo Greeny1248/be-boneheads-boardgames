@@ -1,4 +1,3 @@
-const { resourceLimits } = require("worker_threads");
 const db = require("../db/connection");
 
 readCategories = () => {
@@ -9,9 +8,7 @@ readCategories = () => {
     .then((res) => {
       return res.rows;
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch((err) => {});
 };
 readUsers = () => {
   let queryString = `SELECT * 
@@ -21,15 +18,13 @@ readUsers = () => {
     .then((res) => {
       return res.rows;
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch((err) => {});
 };
 
-readReviews = (sort_by = "created_at", order = "desc", category) => {
+readReviews = (sort_by = "created_at", order = "DESC", category) => {
   let queryString = `SELECT reviews.*, CAST(COUNT(comments.review_id) AS int) AS comment_count
   FROM reviews
-  JOIN comments ON reviews.review_id = comments.review_id `;
+  LEFT JOIN comments ON comments.review_id = reviews.review_id `;
   const queryArray = [];
   const columnArray = [
     "owner",
@@ -41,7 +36,13 @@ readReviews = (sort_by = "created_at", order = "desc", category) => {
     "created_at",
     "votes",
   ];
-  const orderArray = ["asc", "desc"];
+  const categoryArray = [
+    "euro game",
+    "social deduction",
+    "dexterity",
+    "children's games",
+  ];
+  const orderArray = ["asc", "desc", "ASC", "DESC"];
   if (category) {
     queryString += `WHERE category = $1`;
     queryArray.push(category);
@@ -51,9 +52,12 @@ readReviews = (sort_by = "created_at", order = "desc", category) => {
   }
 
   queryString += ` GROUP BY reviews.review_id
-  ORDER BY ${sort_by} ${order};`;
+  ORDER BY reviews.${sort_by} ${order};`;
   return db.query(queryString, queryArray).then((res) => {
-    if (res.rows.length === 0) {
+    if (res.rows.length === 0 && categoryArray.includes(category)) {
+      return [];
+    }
+    if (res.rowCount === 0) {
       return Promise.reject({ status: 404, msg: "Category not found" });
     }
     return res.rows;
@@ -72,7 +76,6 @@ fetchReviewById = (review_id) => {
     if (rowCount === 0) {
       return Promise.reject({ status: 404, msg: "Path not found" });
     } else {
-      const reviews = { ...resourceLimits.rows };
       return rows;
     }
   });
@@ -112,6 +115,18 @@ updateReviewVote = (review_id, inc_votes) => {
   });
 };
 
+removeCommentById = (comment_id) => {
+  const queryString = `DELETE FROM comments
+  WHERE comment_id = $1
+  RETURNING *;`;
+  return db.query(queryString, [comment_id]).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ status: 404, msg: "Path not found" });
+    }
+    return rows;
+  });
+};
+
 module.exports = {
   readCategories,
   readUsers,
@@ -120,4 +135,5 @@ module.exports = {
   fetchCommentsFromReview,
   createReviewComment,
   updateReviewVote,
+  removeCommentById,
 };

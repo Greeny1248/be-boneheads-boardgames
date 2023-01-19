@@ -22,16 +22,13 @@ test("GET /api/categories : returns an array of objects with a slug and desc", (
     .get("/api/categories")
     .expect(200)
     .then((res) => {
+      expect(res.body.categories.length).toBeGreaterThan(1);
       res.body.categories.forEach((category) => {
         expect(typeof category).toBe("object");
         expect(category.hasOwnProperty("description")).toBe(true);
         expect(category.hasOwnProperty("slug")).toBe(true);
       });
-      expect(res.body.categories.length).toBeGreaterThan(1);
     });
-});
-test("GET /api/users : status:200 and response message", () => {
-  return request(app).get("/api/users").expect(200);
 });
 
 test("GET /api/users : returns an array of objects with a username, name, avatar_url", () => {
@@ -39,6 +36,7 @@ test("GET /api/users : returns an array of objects with a username, name, avatar
     .get("/api/users")
     .expect(200)
     .then((res) => {
+      console.log(res.body.users);
       res.body.users.forEach((user) => {
         expect(typeof user).toBe("object");
         expect(user.hasOwnProperty("username")).toBe(true);
@@ -91,8 +89,74 @@ test("returns in date descending order", () => {
       });
     });
 });
+test("GET /api/reviews?query accepts a sort_by query, which sorts by title", () => {
+  return request(app)
+    .get("/api/reviews?sort_by=title")
+    .expect(200)
+    .then(({ body: { reviews } }) => {
+      expect(reviews).toBeSortedBy("title", { descending: true, coerce: true });
+    });
+});
+test("accepts query and returns the reviews in default order (date and descending)", () => {
+  return request(app)
+    .get(`/api/reviews`)
+    .expect(200)
+    .then(({ body: { reviews } }) => {
+      expect(reviews).toBeSortedBy("created_at", {
+        descending: true,
+      });
+    });
+});
+test("accept a category and return games in that category", () => {
+  return request(app)
+    .get(`/api/reviews?category=social+deduction`)
+    .expect(200)
+    .then(({ body: { reviews } }) => {
+      expect(reviews).toBeSortedBy("created_at", { descending: true });
+    });
+});
+test("accept a valid category where there are no reviews in category, returns empty array", () => {
+  return request(app)
+    .get(`/api/reviews?category=children's+games`)
+    .expect(200)
+    .then(({ body: { reviews } }) => {
+      expect(reviews).toEqual([]);
+    });
+});
+test("return reviews ordered by title in ascending order", () => {
+  return request(app)
+    .get(`/api/reviews?sort_by=designer&&order=asc`)
+    .expect(200)
+    .then(({ body: { reviews } }) => {
+      expect(reviews).toBeSortedBy("designer", { descending: false });
+    });
+});
+test("testing for a status 400, user enters non-valid sort_by query", () => {
+  return request(app)
+    .get("/api/reviews?sort_by=badrequest")
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad request");
+    });
+});
+test("testing for 400 status when order query is invalid", () => {
+  return request(app)
+    .get(`/api/reviews?sort_by=title&&order=phone`)
+    .expect(400)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Bad request");
+    });
+});
+test("testing for a 404 when a category column is invalid", () => {
+  return request(app)
+    .get(`/api/reviews?category=nothing`)
+    .expect(404)
+    .then(({ body }) => {
+      expect(body.msg).toBe("Category not found");
+    });
+});
 
-test("GET /api/reviews: returns an object with the correct review_id from the endpoint with an owner, title, review_id, category, review_img_url, created_at, votes, designer", () => {
+test("GET /api/reviews/review_id: returns an object with the correct review_id from the endpoint with an owner, title, review_id, category, review_img_url, created_at, votes, designer", () => {
   return request(app)
     .get("/api/reviews/1")
     .expect(200)
@@ -175,64 +239,6 @@ test("Testing for a 404 error with a invalid review_id that does not exist", () 
       expect(body.msg).toBe("Path not found");
     });
 });
-
-test("GET /api/reviews?query accepts a sort_by query, which sorts by title", () => {
-  return request(app)
-    .get("/api/reviews?sort_by=title")
-    .expect(200)
-    .then(({ body: { reviews } }) => {
-      expect(reviews).toBeSortedBy("title", { descending: true });
-    });
-});
-test("accepts query and returns the reviews in default order (date and descending)", () => {
-  return request(app)
-    .get(`/api/reviews`)
-    .expect(200)
-    .then(({ body: { reviews } }) => {
-      expect(reviews).toBeSortedBy("created_at", { descending: true });
-    });
-});
-test("accept a category and return games in that category", () => {
-  return request(app)
-    .get(`/api/reviews?category=social+deduction`)
-    .expect(200)
-    .then(({ body: { reviews } }) => {
-      expect(reviews).toBeSortedBy("title", { descending: false });
-    });
-});
-test("return reviews ordered by title in ascending order", () => {
-  return request(app)
-    .get(`/api/reviews?sort_by=designer&&order=asc`)
-    .expect(200)
-    .then(({ body: { reviews } }) => {
-      expect(reviews).toBeSortedBy("designer", { descending: false });
-    });
-});
-test("testing for a status 400, user enters non-valid sort_by query", () => {
-  return request(app)
-    .get("/api/reviews?sort_by=badrequest")
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe("Bad request");
-    });
-});
-test("testing for 400 status when order query is invalid", () => {
-  return request(app)
-    .get(`/api/reviews?sort_by=title&&order=phone`)
-    .expect(400)
-    .then(({ body }) => {
-      expect(body.msg).toBe("Bad request");
-    });
-});
-test("testing for a 404 when a category column is invalid", () => {
-  return request(app)
-    .get(`/api/reviews?category=nothing`)
-    .expect(404)
-    .then(({ body }) => {
-      expect(body.msg).toBe("Category not found");
-    });
-});
-
 test("POST /api/reviews/:review_id/comments status:201 and returns newComment", () => {
   const newComment = {
     username: "dav3rid",
@@ -443,6 +449,32 @@ test("Status 404 path not found, if review_id entered is valid but does not exis
   return request(app)
     .post("/api/reviews/9999/comments")
     .send(newComment)
+    .expect(404)
+    .then(({ body: { msg } }) => {
+      expect(msg).toBe("Path not found");
+    });
+});
+
+test("Delete /api/comments/:comment_id Status 204 by comment_id", () => {
+  return request(app)
+    .delete("/api/comments/2")
+    .expect(204)
+    .then(({ body }) => {
+      expect(body).toEqual({});
+    });
+});
+
+test("status 400 Bad request when comment is not valid data type", () => {
+  return request(app)
+    .delete("/api/comments/notacomment")
+    .expect(400)
+    .then(({ body: { msg } }) => {
+      expect(msg).toBe("Bad request");
+    });
+});
+test("status 400 Bad request when comment is not valid data type", () => {
+  return request(app)
+    .delete("/api/comments/9999")
     .expect(404)
     .then(({ body: { msg } }) => {
       expect(msg).toBe("Path not found");
