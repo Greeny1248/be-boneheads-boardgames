@@ -9,8 +9,10 @@ const {
   viewCommentsFromReview,
   postReviewComment,
   patchReviewVote,
+
   viewAllUsers,
   deleteCommentById,
+
 } = require("./controller/controller");
 
 app.get("/api/categories", viewAllCategories);

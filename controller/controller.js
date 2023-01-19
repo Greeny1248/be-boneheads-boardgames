@@ -8,7 +8,9 @@ const {
   fetchCommentsFromReview,
   createReviewComment,
   updateReviewVote,
+
   removeCommentById,
+
 } = require("../model/model.js");
 
 const viewAllCategories = (req, res) => {
@@ -75,6 +77,7 @@ const postReviewComment = (req, res, next) => {
     .catch(next);
 };
 
+
 const patchReviewVote = (req, res, next) => {
   const { review_id } = req.params;
   const { inc_votes } = req.body;
@@ -86,6 +89,7 @@ const patchReviewVote = (req, res, next) => {
     .catch(next);
 };
 
+
 const deleteCommentById = (req, res, next) => {
   const { comment_id } = req.params;
   removeCommentById(comment_id)
@@ -94,6 +98,7 @@ const deleteCommentById = (req, res, next) => {
     })
     .catch(next);
 };
+
 
 module.exports = {
   viewAllCategories,
