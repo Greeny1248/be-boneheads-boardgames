@@ -34,7 +34,10 @@ const viewAllUsers = (req, res, next) => {
 };
 
 const viewAllReviews = (req, res, next) => {
-  readReviews()
+  const { sort_by } = req.query;
+  const { order } = req.query;
+  const { category } = req.query;
+  readReviews(sort_by, order, category)
     .then((reviews) => {
       res.status(200).send({ reviews });
     })
