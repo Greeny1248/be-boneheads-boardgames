@@ -12,6 +12,7 @@ const {
   patchReviewVote,
   viewAllUsers,
   deleteCommentById,
+
 } = require("./controller/controller");
 app.get("/api", viewJSON);
 app.get("/api/categories", viewAllCategories);
