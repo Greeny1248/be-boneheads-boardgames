@@ -1,5 +1,18 @@
 const db = require("../db/connection");
-
+const fs = require("fs/promises");
+readJson = () => {
+  return fs
+    .readFile("./endpoints.json", (err, data) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log(data);
+      return data;
+    })
+    .then((data) => {
+      return data;
+    });
+};
 readCategories = () => {
   let queryString = `SELECT * 
   FROM categories`;
@@ -128,6 +141,7 @@ removeCommentById = (comment_id) => {
 };
 
 module.exports = {
+  readJson,
   readCategories,
   readUsers,
   readReviews,
