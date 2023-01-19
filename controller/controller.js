@@ -7,7 +7,6 @@ const {
   fetchReviewById,
   fetchCommentsFromReview,
   createReviewComment,
-
   updateReviewVote,
 
 } = require("../model/model.js");
@@ -94,5 +93,4 @@ module.exports = {
   postReviewComment,
   patchReviewVote,
   viewAllUsers,
-
 };

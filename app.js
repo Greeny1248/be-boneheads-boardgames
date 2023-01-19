@@ -10,7 +10,9 @@ const {
   postReviewComment,
 
   patchReviewVote,
+
   viewAllUsers,
+
 
 } = require("./controller/controller");
 
