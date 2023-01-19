@@ -9,9 +9,9 @@ const config =
       }
     : {};
 
-// require('dotenv').config({
-//   path: `${__dirname}/../.env.${ENV}`,
-// });
+require("dotenv").config({
+  path: `${__dirname}/../.env.${ENV}`,
+});
 
 if (!process.env.PGDATABASE && !process.env.DATABASE_URL) {
   throw new Error("PGDATABASE/DATABASE_URL not set");
