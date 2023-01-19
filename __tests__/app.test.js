@@ -36,7 +36,6 @@ test("GET /api/users : returns an array of objects with a username, name, avatar
     .get("/api/users")
     .expect(200)
     .then((res) => {
-      console.log(res.body.users);
       res.body.users.forEach((user) => {
         expect(typeof user).toBe("object");
         expect(user.hasOwnProperty("username")).toBe(true);
