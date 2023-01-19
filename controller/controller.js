@@ -7,9 +7,7 @@ const {
   fetchReviewById,
   fetchCommentsFromReview,
   createReviewComment,
-
   updateReviewVote,
-
 
 } = require("../model/model.js");
 

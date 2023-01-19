@@ -30,9 +30,6 @@ test("GET /api/categories : returns an array of objects with a slug and desc", (
       expect(res.body.categories.length).toBeGreaterThan(1);
     });
 });
-test("GET /api/users : status:200 and response message", () => {
-  return request(app).get("/api/users").expect(200);
-});
 
 test("GET /api/users : returns an array of objects with a username, name, avatar_url", () => {
   return request(app)
