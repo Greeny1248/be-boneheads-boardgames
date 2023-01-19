@@ -1,4 +1,3 @@
-const { viewCommentsFromReview } = require("../controller/controller");
 const db = require("../db/connection");
 
 readCategories = () => {
@@ -6,8 +5,20 @@ readCategories = () => {
   FROM categories`;
   return db
     .query(queryString)
-    .then((results) => {
-      return results.rows;
+    .then((res) => {
+      return res.rows;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+readUsers = () => {
+  let queryString = `SELECT * 
+  FROM users`;
+  return db
+    .query(queryString)
+    .then((res) => {
+      return res.rows;
     })
     .catch((err) => {
       console.log(err);
@@ -49,7 +60,9 @@ ORDER BY created_at DESC`;
   });
 };
 createReviewComment = (review_id, username, body) => {
+
   if (!username || !body) {
+
     return Promise.reject({ status: 400, msg: "Bad request" });
   }
   const queryString = `INSERT INTO comments (author, body, review_id) VALUES ($1, $2, $3) RETURNING *`;
@@ -73,9 +86,9 @@ updateReviewVote = (review_id, inc_votes) => {
 };
 
 
-
 module.exports = {
   readCategories,
+  readUsers,
   readReviews,
   fetchReviewById,
   fetchCommentsFromReview,

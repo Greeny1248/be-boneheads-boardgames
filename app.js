@@ -11,9 +11,13 @@ const {
 
   patchReviewVote,
 
+  viewAllUsers,
+
+
 } = require("./controller/controller");
 
 app.get("/api/categories", viewAllCategories);
+app.get("/api/users", viewAllUsers);
 app.get("/api/reviews", viewAllReviews);
 app.get("/api/reviews/:review_id", viewReviewById);
 app.get("/api/reviews/:review_id/comments", viewCommentsFromReview);

@@ -4,7 +4,6 @@ const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const { expect } = require("@jest/globals");
-const { describe } = require("yargs");
 
 afterAll(() => {
   return db.end();
@@ -29,6 +28,26 @@ test("GET /api/categories : returns an array of objects with a slug and desc", (
         expect(category.hasOwnProperty("slug")).toBe(true);
       });
       expect(res.body.categories.length).toBeGreaterThan(1);
+    });
+});
+test("GET /api/users : status:200 and response message", () => {
+  return request(app)
+  .get("/api/users")
+  .expect(200);
+});
+
+test("GET /api/users : returns an array of objects with a username, name, avatar_url", () => {
+  return request(app)
+    .get("/api/users")
+    .expect(200)
+    .then((res) => {
+      res.body.users.forEach((user) => {
+        expect(typeof user).toBe("object");
+        expect(user.hasOwnProperty("username")).toBe(true);
+        expect(user.hasOwnProperty("name")).toBe(true);
+        expect(user.hasOwnProperty("avatar_url")).toBe(true);
+      });
+      expect(res.body.users.length).toBeGreaterThan(1);
     });
 });
 
