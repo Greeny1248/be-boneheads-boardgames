@@ -1,6 +1,5 @@
-const { response } = require("../app");
-const { devData } = require("../db/data/development-data/index");
 const {
+  readJson,
   readCategories,
   readUsers,
   readReviews,
@@ -10,8 +9,16 @@ const {
   updateReviewVote,
 
   removeCommentById,
-
 } = require("../model/model.js");
+const viewJSON = (req, res, next) => {
+  readJson()
+    .then((data) => {
+      res.status(200).send({ data: JSON.parse(data) });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
 
 const viewAllCategories = (req, res) => {
   readCategories()
@@ -77,7 +84,6 @@ const postReviewComment = (req, res, next) => {
     .catch(next);
 };
 
-
 const patchReviewVote = (req, res, next) => {
   const { review_id } = req.params;
   const { inc_votes } = req.body;
@@ -89,6 +95,14 @@ const patchReviewVote = (req, res, next) => {
     .catch(next);
 };
 
+const deleteCommentById = (req, res, next) => {
+  const { comment_id } = req.params;
+  removeCommentById(comment_id)
+    .then(() => {
+      res.status(204).send();
+    })
+    .catch(next);
+};
 
 const deleteCommentById = (req, res, next) => {
   const { comment_id } = req.params;
@@ -101,6 +115,7 @@ const deleteCommentById = (req, res, next) => {
 
 
 module.exports = {
+  viewJSON,
   viewAllCategories,
   viewAllReviews,
   viewReviewById,

@@ -3,18 +3,18 @@ const app = express();
 app.use(express.json());
 
 const {
+  viewJSON,
   viewAllCategories,
   viewAllReviews,
   viewReviewById,
   viewCommentsFromReview,
   postReviewComment,
   patchReviewVote,
-
   viewAllUsers,
   deleteCommentById,
 
 } = require("./controller/controller");
-
+app.get("/api", viewJSON);
 app.get("/api/categories", viewAllCategories);
 app.get("/api/users", viewAllUsers);
 app.get("/api/reviews", viewAllReviews);
