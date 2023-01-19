@@ -3,7 +3,6 @@ const data = require("../db/data/test-data");
 const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
-const { expect } = require("@jest/globals");
 
 afterAll(() => {
   return db.end();
@@ -12,7 +11,191 @@ afterAll(() => {
 beforeEach(() => {
   return seed(data);
 });
+test("GET /api : status 200 and returns data from endpoint.JSON", () => {
+  return request(app)
+    .get("/api")
+    .expect(200)
+    .then(({ body: { data } }) => {
+      expect(data).toEqual({
+        "GET /api": {
+          description: "Returns a json showing all endpoints",
+        },
+        "GET /api/categories": {
+          description: "Returns an array of objects containing all categories",
+          queries: [],
+          exampleResponse: {
+            categories: [
+              {
+                slug: "euro game",
+                description: "Abstact games that involve little luck",
+              },
+              {
+                slug: "social deduction",
+                description:
+                  "Players attempt to uncover each others hidden role",
+              },
+              {
+                slug: "dexterity",
+                description: "Games involving physical skill",
+              },
+              {
+                slug: "childrens games",
+                description: "Games suitable for children",
+              },
+            ],
+          },
+        },
+        "GET /api/users": {
+          description:
+            "responds with an array of users objects, having the following properties: username, name, avatar_url",
+          queries: [],
+          exampleResponse: [
+            {
+              username: "mallionaire",
+              name: "haz",
+              avatar_url:
+                "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg",
+            },
+            {
+              username: "philippaclaire9",
+              name: "philippa",
+              avatar_url:
+                "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4",
+            },
+            {
+              username: "bainesface",
+              name: "sarah",
+              avatar_url:
+                "https://avatars2.githubusercontent.com/u/24394918?s=400&v=4",
+            },
+            {
+              username: "dav3rid",
+              name: "dave",
+              avatar_url:
+                "https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png",
+            },
+          ],
+        },
 
+        "GET /api/reviews": {
+          description:
+            "Returns an array showing all arrays, or all arrays from given queries",
+          queries: ["category", "sort_by", "order"],
+          exampleResponse: {
+            reviews: [
+              {
+                review_id: 3,
+                title: "Ultimate Werewolf",
+                category: "social deduction",
+                designer: "Akihisa Okui",
+                owner: "bainesface",
+                review_body: "We couldnt find the werewolf!",
+                review_img_url:
+                  "https://images.pexels.com/photos/5350049/pexels-photo-5350049.jpeg?w=700&h=700",
+                created_at: "2021-01-18T10:01:41.251Z",
+                votes: 5,
+                comment_count: 3,
+              },
+            ],
+          },
+        },
+
+        "GET /api/reviews/:review_id": {
+          description: "Returns a review from given :review_id",
+          queries: [],
+          exampleResponse: {
+            reviews: {
+              review_id: 1,
+              title: "Agricola",
+              category: "euro game",
+              designer: "Uwe Rosenberg",
+              owner: "mallionaire",
+              review_body: "Farmyard fun!",
+              review_img_url:
+                "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+              created_at: "2021-01-18T10:00:20.514Z",
+              votes: 1,
+              comment_count: 0,
+            },
+          },
+        },
+        "GET /api/reviews/:review_id/comments": {
+          description:
+            "Returns array of objects (comments) refering to review at :review_id",
+          queries: [],
+          exampleResponse: {
+            comments: [
+              {
+                comment_id: 5,
+                body: "Now this is a story all about how, board games turned my life upside down",
+                review_id: 2,
+                author: "mallionaire",
+                votes: 13,
+                created_at: "2021-01-18T10:24:05.410Z",
+              },
+              {
+                comment_id: 1,
+                body: "I loved this game too!",
+                review_id: 2,
+                author: "bainesface",
+                votes: 16,
+                created_at: "2017-11-22T12:43:33.389Z",
+              },
+              {
+                comment_id: 4,
+                body: "EPIC board game!",
+                review_id: 2,
+                author: "bainesface",
+                votes: 16,
+                created_at: "2017-11-22T12:36:03.389Z",
+              },
+            ],
+          },
+        },
+
+        "POST /api/reviews/:review_id/comments": {
+          description:
+            "accepts an object containing: Username, body then returns the posted comment",
+          queries: [],
+          exampleResponse: {
+            comment: {
+              body: "Cool game bro",
+              comment_id: 7,
+              votes: 0,
+              author: "dav3rid",
+              review_id: 1,
+              created_at: "2023-01-19T10:05:05.477Z",
+            },
+          },
+        },
+        "PATCH /api/reviews/:review_id": {
+          description:
+            "Increases or decreases the the votes key, dependent upon inc_votes which is sent to server in the request.",
+          queries: [],
+          exampleResponse: {
+            reviews: {
+              title: "Jenga",
+              designer: "Leslie Scott",
+              owner: "philippaclaire9",
+              review_img_url:
+                "https://images.pexels.com/photos/4473494/pexels-photo-4473494.jpeg?w=700&h=700",
+              review_body: "Fiddly fun for all the family",
+              category: "dexterity",
+              created_at: "2021-01-18T10:01:41.251Z",
+              votes: 15,
+              review_id: 2,
+            },
+          },
+        },
+        "DELETE /api/comments/:comment_id": {
+          description:
+            "deletes comment by :comment_id in path, responds with no content",
+          queries: [],
+          exampleResponse: [],
+        },
+      });
+    });
+});
 test("GET /api/categories : status:200 and response message", () => {
   return request(app).get("/api/categories").expect(200);
 });

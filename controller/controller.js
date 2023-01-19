@@ -1,6 +1,5 @@
-const { response } = require("../app");
-const { devData } = require("../db/data/development-data/index");
 const {
+  readJson,
   readCategories,
   readUsers,
   readReviews,
@@ -10,6 +9,15 @@ const {
   updateReviewVote,
   removeCommentById,
 } = require("../model/model.js");
+const viewJSON = (req, res, next) => {
+  readJson()
+    .then((data) => {
+      res.status(200).send({ data: JSON.parse(data) });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
 
 const viewAllCategories = (req, res) => {
   readCategories()
@@ -96,6 +104,7 @@ const deleteCommentById = (req, res, next) => {
 };
 
 module.exports = {
+  viewJSON,
   viewAllCategories,
   viewAllReviews,
   viewReviewById,
