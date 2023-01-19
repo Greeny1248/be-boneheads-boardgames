@@ -611,8 +611,10 @@ test("Status 400 Bad request, needs username and body", () => {
 });
 test("Status 400 Bad request, needs valid username from users.js file.", () => {
   const newComment = {
+
     username: "NotAUser",
     body: "",
+
   };
   return request(app)
     .post("/api/reviews/1/comments")
@@ -646,7 +648,7 @@ test("Delete /api/comments/:comment_id Status 204 by comment_id", () => {
     });
 });
 
-test("status 400 Bad request when comment is not valid data type", () => {
+test("status 400 Bad request when comment_id is a string, not a number", () => {
   return request(app)
     .delete("/api/comments/notacomment")
     .expect(400)
@@ -654,7 +656,7 @@ test("status 400 Bad request when comment is not valid data type", () => {
       expect(msg).toBe("Bad request");
     });
 });
-test("status 400 Bad request when comment is not valid data type", () => {
+test("status 400 Bad request when comment_id does not exist", () => {
   return request(app)
     .delete("/api/comments/9999")
     .expect(404)
