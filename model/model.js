@@ -6,7 +6,6 @@ readJson = () => {
       if (err) {
         console.log(err);
       }
-      console.log(data);
       return data;
     })
     .then((data) => {
@@ -70,7 +69,7 @@ readReviews = (sort_by = "created_at", order = "DESC", category) => {
     if (res.rows.length === 0 && categoryArray.includes(category)) {
       return [];
     }
-    if (res.rowCount === 0) {
+    if (res.rows.length === 0) {
       return Promise.reject({ status: 404, msg: "Category not found" });
     }
     return res.rows;
@@ -151,7 +150,6 @@ removeCommentById = (comment_id) => {
     return rows;
   });
 };
-
 
 module.exports = {
   readJson,

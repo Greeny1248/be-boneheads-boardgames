@@ -291,7 +291,7 @@ test("accepts query and returns the reviews in default order (date and descendin
 });
 test("accept a category and return games in that category", () => {
   return request(app)
-    .get(`/api/reviews?category=social+deduction`)
+    .get(`/api/reviews/?category=social+deduction`)
     .expect(200)
     .then(({ body: { reviews } }) => {
       expect(reviews).toBeSortedBy("created_at", { descending: true });
@@ -299,7 +299,7 @@ test("accept a category and return games in that category", () => {
 });
 test("accept a valid category where there are no reviews in category, returns empty array", () => {
   return request(app)
-    .get(`/api/reviews?category=children's+games`)
+    .get(`/api/reviews/?category=children's+games`)
     .expect(200)
     .then(({ body: { reviews } }) => {
       expect(reviews).toEqual([]);
@@ -307,7 +307,7 @@ test("accept a valid category where there are no reviews in category, returns em
 });
 test("return reviews ordered by title in ascending order", () => {
   return request(app)
-    .get(`/api/reviews?sort_by=designer&&order=asc`)
+    .get(`/api/reviews/?sort_by=designer&&order=asc`)
     .expect(200)
     .then(({ body: { reviews } }) => {
       expect(reviews).toBeSortedBy("designer", { descending: false });
@@ -315,7 +315,7 @@ test("return reviews ordered by title in ascending order", () => {
 });
 test("testing for a status 400, user enters non-valid sort_by query", () => {
   return request(app)
-    .get("/api/reviews?sort_by=badrequest")
+    .get("/api/reviews/?sort_by=badrequest")
     .expect(400)
     .then(({ body }) => {
       expect(body.msg).toBe("Bad request");
@@ -323,7 +323,7 @@ test("testing for a status 400, user enters non-valid sort_by query", () => {
 });
 test("testing for 400 status when order query is invalid", () => {
   return request(app)
-    .get(`/api/reviews?sort_by=title&&order=phone`)
+    .get(`/api/reviews/?sort_by=title&&order=phone`)
     .expect(400)
     .then(({ body }) => {
       expect(body.msg).toBe("Bad request");
@@ -331,7 +331,7 @@ test("testing for 400 status when order query is invalid", () => {
 });
 test("testing for a 404 when a category column is invalid", () => {
   return request(app)
-    .get(`/api/reviews?category=nothing`)
+    .get(`/api/reviews/?category=nothing`)
     .expect(404)
     .then(({ body }) => {
       expect(body.msg).toBe("Category not found");
@@ -611,10 +611,8 @@ test("Status 400 Bad request, needs username and body", () => {
 });
 test("Status 400 Bad request, needs valid username from users.js file.", () => {
   const newComment = {
-
     username: "NotAUser",
     body: "",
-
   };
   return request(app)
     .post("/api/reviews/1/comments")
