@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require('cors');
 const app = express();
 app.use(express.json());
 
@@ -14,6 +15,8 @@ const {
   deleteCommentById,
 
 } = require("./controller/controller");
+
+app.use(cors());
 app.get("/api", viewJSON);
 app.get("/api/categories", viewAllCategories);
 app.get("/api/users", viewAllUsers);
